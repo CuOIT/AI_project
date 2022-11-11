@@ -1,12 +1,11 @@
-import pygame, sys
-
+import pygame
 
 
 def loadImage(colors):
-    img = ["bB", "bK", "bN", "bp", "bQ", "bR", "wB", "wK", "wp", "wQ","wR", "wN"]
+    img = ["bBishop", "bKing", "bKnight", "bPawn", "bQueen", "bRook", "wBishop", "wKing", "wPawn", "wQueen","wRook", "wKnight"]
     
     for i in img:
-        colors[i] = pygame.transform.scale(pygame.image.load("image/"+i + ".png"), (100,100))
+        colors[i] = pygame.transform.scale(pygame.image.load("res/"+ i + ".png"), (100,100))
     
     
 def draws(scr):
@@ -65,16 +64,16 @@ def main():
     screen.fill(pygame.Color("white"))
     clock = pygame.time.Clock()
     
-    node = pygame.transform.scale(pygame.image.load("image/node_xanh.png"), (100,100))
+    node = pygame.transform.scale(pygame.image.load("res/node_xanh.png"), (100,100))
     
-    chess_state = [["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
-                   ["bp","bp","bp","bp","bp","bp","bp","bp"],
+    chess_state = [["bRook", "bKnight", "bBishop", "bQueen", "bKing", "bBishop", "bKnight", "bRook"],
+                   ["bPawn","bPawn","bPawn","bPawn","bPawn","bPawn","bPawn","bPawn"],
                    ["xx","xx","xx","xx","xx","xx","xx","xx"],
                    ["xx","xx","xx","xx","xx","xx","xx","xx"],
                    ["xx","xx","xx","xx","xx","xx","xx","xx"],
                    ["xx","xx","xx","xx","xx","xx","xx","xx"],
-                   ["wp","wp","wp","wp","wp","wp","wp","wp"],
-                   ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]
+                   ["wPawn","wPawn","wPawn","wPawn","wPawn","wPawn","wPawn","wPawn"],
+                   ["wRook", "wKnight", "wBishop", "wQueen", "wKing", "wBishop", "wKnight", "wRook"]
                    ]
     
     selected = ()
