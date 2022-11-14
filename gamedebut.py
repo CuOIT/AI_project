@@ -1,42 +1,63 @@
 import pygame
 
 
-def loadImage(chess):
-    img = ["bBishop", "bKing", "bKnight", "bPawn", "bQueen", "bRook", "wBishop", "wKing", "wPawn", "wQueen", "wRook",
+def loadImage(pieceImages):
+    pieces = ["bBishop", "bKing", "bKnight", "bPawn", "bQueen", "bRook", "wBishop", "wKing", "wPawn", "wQueen", "wRook",
            "wKnight"]
+    for i in pieces:
+        pieceImages[i] = pygame.transform.scale(pygame.image.load("res/" + i + ".png"), (90, 90))
 
-    for i in img:
-        chess[i] = pygame.transform.scale(pygame.image.load("res/" + i + ".png"), (100, 100))
-
-
-def draws(scr):
+def draws(screen,selected,chess_state,click,turn):#this function is to draw board and hightlight
     colors = [pygame.Color("pink"), pygame.Color("white")]
-    for r in range(0, 8):
-        for c in range(0, 8):
-            color = colors[((r + c) % 2)]
-            pygame.draw.rect(scr, color, pygame.Rect(c * 100, r * 100, 100, 100))
+    for row in range(0, 8):
+        for col in range(0, 8):
+            color = colors[((row + col) % 2)]
+            pygame.draw.rect(screen, color, pygame.Rect(col * 100, row * 100, 100, 100))
+    if selected!=():
+        pygame.draw.rect(screen, pygame.Color("green"), pygame.Rect(selected[0] * 100, selected[1] * 100, 100, 100))
+        moveList=checkMove(chess_state,click,turn)
+        for i in moveList:
+            pygame.draw.rect(screen,pygame.Color(198,226,255),pygame.Rect(i[0]*100+1,i[1]*100+1,98,98))     
 
-
-def drawChess(scr, chess, chess_state):
+def drawPieces(screen, pieceImages, chess_state):
     for c in range(0, 8):
         for l in range(0, 8):
             if chess_state[l][c] == "xx":
                 continue
             else:
-                scr.blit(chess[chess_state[l][c]], pygame.Rect(c * 100, l * 100, 100, 100))
-    # scr.blit(image, pygame.Rect(x*100, y*100, 100, 100))
+                screen.blit(pieceImages[chess_state[l][c]], pygame.Rect(c * 100+5, l * 100+5, 100, 100))
 
+def checkMove(chess_state,click,turn):
+    oldX = click[0][0]
+    oldY = click[0][1]
+    #newX = click[1][0]
+    #newY = click[1][1]
+    piece = chess_state[oldY][oldX]
+    moveList = []  # List of valid moves
+    validMove = False
 
+    if "Pawn" in piece:
+        moveList = checkPawnMove(oldX, oldY, turn, chess_state)
+
+    elif "Rook" in piece:
+        moveList = checkRookMove(oldX, oldY, turn, chess_state)
+
+    elif "Bishop" in piece:
+        moveList = checkBishopMove(oldX, oldY, turn, chess_state)
+
+    elif "Queen" in piece:
+        moveList = checkQueenMove(oldX, oldY, turn, chess_state)
+
+    return moveList
 def moveChess(chess_state, click, turn):
     oldX = click[0][0]
     oldY = click[0][1]
     newX = click[1][0]
     newY = click[1][1]
 
-    piece = chess_state[oldY][oldX]
+    '''piece = chess_state[oldY][oldX]
     print(piece)
     moveList = []  # List of valid moves
-    validMove = False
 
     if "Pawn" in piece:
         moveList = checkPawnMove(oldX, oldY, moveList, turn, chess_state)
@@ -48,8 +69,10 @@ def moveChess(chess_state, click, turn):
         moveList = checkBishopMove(oldX, oldY, moveList, turn, chess_state)
 
     elif "Queen" in piece:
-        moveList = checkQueenMove(oldX, oldY, moveList, turn, chess_state)
-
+        moveList = checkQueenMove(oldX, oldY, moveList, turn, chess_state)'''
+    moveList=checkMove(chess_state,click,turn)
+    print(moveList)
+    validMove = False
     for pos in moveList:
         if (newX, newY) == pos:
             validMove = True
@@ -72,7 +95,8 @@ def moveChess(chess_state, click, turn):
     return True
 
 
-def checkPawnMove(x, y, moveList, turn, chess_state):
+def checkPawnMove(x, y, turn, chess_state):
+    moveList=[]
     if turn == True:
         if chess_state[y - 1][x] == "xx":  # White move ahead 1 step
             pos = (x, y - 1)
@@ -111,9 +135,9 @@ def checkPawnMove(x, y, moveList, turn, chess_state):
     return moveList
 
 
-def checkRookMove(x, y, moveList, turn, chess_state):
+def checkRookMove(x, y, turn, chess_state):
     direction = ((-1, 0), (1, 0), (0, -1), (0, 1))
-
+    moveList=[]
     if turn == True:
         enemyColor = "b"
     else:
@@ -141,9 +165,9 @@ def checkRookMove(x, y, moveList, turn, chess_state):
     return moveList
 
 
-def checkBishopMove(x, y, moveList, turn, chess_state):
+def checkBishopMove(x, y, turn, chess_state):
     direction = ((-1, 1), (1, -1), (1, 1), (-1, -1))
-
+    moveList=[]
     if turn == True:
         enemyColor = "b"
     else:
@@ -171,10 +195,15 @@ def checkBishopMove(x, y, moveList, turn, chess_state):
     return moveList
 
 
-def checkQueenMove(x, y, moveList, turn, chess_state):
-    moveList.append(checkRookMove(x, y, moveList, turn, chess_state))
-    moveList.append(checkBishopMove(x, y, moveList, turn, chess_state))
-
+def checkQueenMove(x, y, turn, chess_state):
+    moveList=[]
+    if checkRookMove(x, y, turn, chess_state):
+        for pos in checkRookMove(x, y, turn, chess_state):
+            moveList.append(pos)
+    if checkBishopMove(x, y,turn, chess_state):
+        for pos in checkBishopMove(x, y, turn, chess_state):
+            moveList.append(pos)
+    print(moveList)
     return moveList
 
 
@@ -191,37 +220,35 @@ def turn_choose(chess_state, selected, turn):
             return False
     return False
 
-
+def highlightMove():
+    pass
 def main():
     pygame.init()
     pygame.display.set_caption("Game debut")
     screen = pygame.display.set_mode((800, 800))
-    # screen.fill(pygame.Color("white"))
     clock = pygame.time.Clock()
 
-    node = pygame.transform.scale(pygame.image.load("res/node_xanh.png"), (100, 100))
+    #node = pygame.transform.scale(pygame.image.load("res/node_xanh.png"), (100, 100))
 
     chess_state = [["bRook", "bKnight", "bBishop", "bQueen", "bKing", "bBishop", "bKnight", "bRook"],
                    ["bPawn", "bPawn", "bPawn", "bPawn", "bPawn", "bPawn", "bPawn", "bPawn"],
                    ["xx", "xx", "xx", "xx", "xx", "xx", "xx", "xx"],
                    ["xx", "xx", "xx", "xx", "xx", "xx", "xx", "xx"],
-                   ["xx", "xx", "xx", "xx", "xx", "wRook", "xx", "xx"],
+                   ["xx", "xx", "xx", "xx", "xx", "xx", "xx", "xx"],
                    ["xx", "xx", "xx", "xx", "xx", "xx", "xx", "xx"],
                    ["wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn"],
                    ["wRook", "wKnight", "wBishop", "wQueen", "wKing", "wBishop", "wKnight", "wRook"]
                    ]
-    selected = ()
+    selected = () #tuples
     click = []
-    color = {}
-    loadImage(color)
+    pieceImages = {} #dictionary
+    loadImage(pieceImages)
     turn = True
     running = True
     while running:
-        draws(screen)
-        drawChess(screen, color, chess_state)
-        if selected != ():
-            screen.blit(node, pygame.Rect(selected[0] * 100, selected[1] * 100, 100, 100))
-
+        draws(screen,selected,chess_state,click,turn)
+        #draws(screen,selected)
+        drawPieces(screen, pieceImages, chess_state)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -245,7 +272,6 @@ def main():
                     elif len(click) == 1 and turn_choose(chess_state, (click[0][0], click[0][1]), turn) == False:
                         selected = ()
                         click = []
-
         clock.tick(15)
         pygame.display.flip()
 
