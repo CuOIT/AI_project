@@ -1,23 +1,27 @@
 import pygame
 
+HEIGHT = 800
+WIDTH = 800
+SCALE = HEIGHT / 8
+
 
 def loadImage(pieceImages):
     pieces = ["bBishop", "bKing", "bKnight", "bPawn", "bQueen", "bRook", "wBishop", "wKing", "wPawn", "wQueen", "wRook",
            "wKnight"]
     for i in pieces:
-        pieceImages[i] = pygame.transform.scale(pygame.image.load("res/" + i + ".png"), (90, 90))
+        pieceImages[i] = pygame.transform.scale(pygame.image.load("res/" + i + ".png"), (SCALE-10, SCALE-10))
 
 def draws(screen,selected,chess_state,click,turn):#this function is to draw board and hightlight
     colors = [pygame.Color("pink"), pygame.Color("white")]
     for row in range(0, 8):
         for col in range(0, 8):
             color = colors[((row + col) % 2)]
-            pygame.draw.rect(screen, color, pygame.Rect(col * 100, row * 100, 100, 100))
+            pygame.draw.rect(screen, color, pygame.Rect(col * SCALE, row * SCALE, SCALE, SCALE))
     if selected!=():
-        pygame.draw.rect(screen, pygame.Color("green"), pygame.Rect(selected[0] * 100, selected[1] * 100, 100, 100))
+        pygame.draw.rect(screen, pygame.Color("green"), pygame.Rect(selected[0] * SCALE, selected[1] * SCALE, SCALE, SCALE))
         moveList=checkMove(chess_state,click,turn)
         for i in moveList:
-            pygame.draw.rect(screen,pygame.Color(198,226,255),pygame.Rect(i[0]*100+1,i[1]*100+1,98,98))     
+            pygame.draw.rect(screen,pygame.Color(198,226,255),pygame.Rect(i[0]*SCALE+1,i[1]*SCALE+1, SCALE-2 ,SCALE - 2))     
 
 def drawPieces(screen, pieceImages, chess_state):
     for c in range(0, 8):
@@ -25,7 +29,7 @@ def drawPieces(screen, pieceImages, chess_state):
             if chess_state[l][c] == "xx":
                 continue
             else:
-                screen.blit(pieceImages[chess_state[l][c]], pygame.Rect(c * 100+5, l * 100+5, 100, 100))
+                screen.blit(pieceImages[chess_state[l][c]], pygame.Rect(c * SCALE+5, l * SCALE+5, SCALE, SCALE))
 
 def checkMove(chess_state,click,turn):
     oldX = click[0][0]
@@ -255,8 +259,8 @@ def main():
             elif event.type == pygame.MOUSEBUTTONDOWN:
 
                 location = pygame.mouse.get_pos()
-                x = int(location[0] / 100)
-                y = int(location[1] / 100)
+                x = int(location[0] / SCALE)
+                y = int(location[1] / SCALE)
                 if selected == (x, y):
                     selected = ()
                     click = []
