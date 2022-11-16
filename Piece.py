@@ -122,15 +122,54 @@ class Bishop(Piece):
 class Knight(Piece):
     def __init__(self,name):
         Piece.__init__(self,name)
+
+    def checkKnightMove(self, x, y, moveList, turn, board):
+        direction = ((-2, -1), (-2, 1), (2, -1), (2, 1), (1, 2), (1, -2), (-1, 2), (-1, -2))
+        if turn == True:
+            enemyColor = "b"
+        else:
+            enemyColor = "w"
+
+        for d in direction:
+            newX = x + d[0]
+            newY = y + d[1]
+            if 0 <= newX < 8 and 0 <= newY < 8:  # Position on the board
+                if board[newY][newX] == "xx":
+                    pos = (newX, newY)
+                    moveList.append(pos)
+                elif board[newY][newX][0] == enemyColor:
+                    pos = (newX, newY)
+                    moveList.append(pos)
+        return moveList
+
 class Queen(Piece):
     def __init__(self,name):
         Piece.__init__(self,name)
 
     def checkQueenMove(self, x, y, moveList, turn, board):
-        moveList.append(Rook.checkRookMove(x, y, moveList, turn, board))
-        moveList.append(Bishop.checkBishopMove(x, y, moveList, turn, board))
+        moveList.append(Rook.checkRookMove(self, x, y, moveList, turn, board))
+        moveList.append(Bishop.checkBishopMove(self, x, y, moveList, turn, board))
 
         return moveList
 class King(Piece):
     def __init__(self,name):
         Piece.__init__(self,name)
+
+    def checkKingMove(self, x, y, moveList, turn, board):
+        direction = ((-1, 1), (-1, 0), (-1, -1), (0, 1), (0, -1), (1, -1), (1, 0), (1, 1))
+        if turn == True:
+            enemyColor = "b"
+        else:
+            enemyColor = "w"
+
+        for i in range(8):
+            newX = x + direction[i][0]
+            newY = y + direction[i][1]
+            if 0 <= newX < 8 and 0 <= newY < 8:
+                if board[newY][newX] == "xx":
+                    pos = (newX, newY)
+                    moveList.append(pos)
+                elif board[newY][newX][0] == enemyColor:
+                    pos = (newX, newY)
+                    moveList.append(pos)
+        return moveList
