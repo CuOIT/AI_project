@@ -16,7 +16,7 @@ rook = Piece.Rook("Rook")
 bishop = Piece.Bishop("Bishop")
 knight = Piece.Knight("Knight")
 queen = Piece.Queen("Queen")
-King = Piece.King("King")
+king = Piece.King("King")
 
 
 class Game:
@@ -88,6 +88,12 @@ class Game:
 
         elif "Queen" in piece:
             moveList = queen.checkQueenMove(oldX, oldY, moveList, game.whiteTurn, board.board)
+
+        elif "Knight" in piece:
+            moveList = knight.checkKnightMove(oldX, oldY, moveList, game.whiteTurn, board.board)
+
+        elif "King" in piece:
+            moveList = king.checkKingMove(oldX, oldY, moveList, game.whiteTurn, board.board)
 
         for pos in moveList:
             if (newX, newY) == pos:

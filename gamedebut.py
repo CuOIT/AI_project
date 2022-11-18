@@ -283,7 +283,7 @@ def animation(click, screen, chess_state, clock):
     
     dR = click[1][1] - click[0][1]
     dC = click[1][0] - click[0][0]
-    fps = 8
+    fps = 3
     fcount = (abs(dR) + abs(dC)) * fps
     for frame in range(fcount + 1):
         r = click[0][1] + dR*frame/fcount
