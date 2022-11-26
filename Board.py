@@ -1,4 +1,4 @@
-import chess
+# import chess
 import pygame as pg
 
 

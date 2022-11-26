@@ -5,6 +5,7 @@ WIDTH = 800
 SCALE = HEIGHT / 8
 pieceImages = {} #dictionary
 turn = True
+catle = {"wKR": True, "wQR": True, "bKR": True, "bQR": True}
 
 
 colors = [pygame.Color("pink"), pygame.Color("white")]
@@ -65,23 +66,8 @@ def moveChess(chess_state, click, turn):
     newX = click[1][0]
     newY = click[1][1]
 
-    '''piece = chess_state[oldY][oldX]
-    print(piece)
-    moveList = []  # List of valid moves
-
-    if "Pawn" in piece:
-        moveList = checkPawnMove(oldX, oldY, moveList, turn, chess_state)
-
-    elif "Rook" in piece:
-        moveList = checkRookMove(oldX, oldY, moveList, turn, chess_state)
-
-    elif "Bishop" in piece:
-        moveList = checkBishopMove(oldX, oldY, moveList, turn, chess_state)
-
-    elif "Queen" in piece:
-        moveList = checkQueenMove(oldX, oldY, moveList, turn, chess_state)'''
     moveList=checkMove(chess_state,click,turn)
-    # print(moveList)
+
     validMove = False
     for pos in moveList:
         if (newX, newY) == pos:
@@ -102,6 +88,46 @@ def update(chess_state, click):
     newX = click[1][0]
     newY = click[1][1]
     # Cập nhật lại bàn cờ
+    
+    #neu xe di chuyen
+    if "Rook" in chess_state[oldY][oldX]:
+        if oldY == 7 and oldX == 0:
+            catle["wQR"] = False
+        elif oldY == 7 and oldX == 7:
+            catle["wKR"] = False
+        elif oldY == 0 and oldX == 0:
+            catle["bQR"] = False
+        elif oldX == 7 and oldY == 0:
+            catle["bKR"] = False
+    
+    # neu nhap thanh thi cap nhat lai con xe
+    if "King" in chess_state[oldY][oldX]:
+        if newX - oldX == 2:
+            if chess_state[oldY][oldX] == "wKing":
+                catle["wKR"] = False
+                catle["wQR"] = False
+            else:
+                catle["bQR"] = False
+                catle["bKR"] = False
+                
+            chess_state[oldY][newX-1] = chess_state[oldY][newX+1] 
+            chess_state[oldY][newX+1] = "xx"
+            
+            if chess_state[oldY][oldX] == "wKing":
+                catle["wKR"] = False
+                catle["wQR"] = False
+            else:
+                catle["bQR"] = False
+                catle["bKR"] = False
+        elif oldX - newX == 2:
+            if chess_state[oldY][oldX] == "wKing":
+                catle["wKR"] = False
+                catle["wQR"] = False
+            else:
+                catle["bQR"] = False
+                catle["bKR"] = False
+            chess_state[oldY][newX+1] = chess_state[oldY][newX-2]
+            chess_state[oldY][newX-2] = "xx"
     chess_state[newY][newX] = chess_state[oldY][oldX]
     chess_state[oldY][oldX] = "xx"
 
@@ -224,7 +250,16 @@ def checkKingMove(x, y, turn, board):
         enemyColor = "b"
     else:
         enemyColor = "w"
-
+    if (turn == True):
+        if catle["wKR"] == True and currentCastleRightKing(board, True, 5) == True:
+            moveList.append((6,7))
+        if catle["wQR"] == True and currentCastleRightKing(board, True, 1) == True:
+            moveList.append((2,7))
+    else:
+        if catle["bKR"] == True and currentCastleRightKing(board, False, 5) == True:  
+            moveList.append((6,0))
+        if catle["bQR"] == True and currentCastleRightKing(board, False, 1) == True:
+            moveList.append((2,0))
     for i in range(8):
         newX = x + direction[i][0]
         newY = y + direction[i][1]
@@ -257,6 +292,16 @@ def checkKnightMove(x, y, turn, board):
                 moveList.append(pos)
     return moveList
 
+def currentCastleRightKing(chess_state, turn, c):
+    if turn == True:
+        r = 7
+    else:
+        r = 0
+    if chess_state[r][c] == "xx" and chess_state[r][c+1] == "xx" and chess_state[r][c+2] == "xx" and "Rook" in chess_state[r][c-1] :
+        return True
+    if chess_state[r][c] == "xx" and chess_state[r][c+1] == "xx" and "Rook" in chess_state[r][c+2]:
+        return True
+    return False
 
 def turn_choose(chess_state, selected, turn):
     if turn == True:
@@ -345,10 +390,13 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-
+                
                 location = pygame.mouse.get_pos()
                 x = int(location[0] / SCALE)
                 y = int(location[1] / SCALE)
+                print((y,x))
+                print(chess_state[y][x])
+                print(currentCastleRightKing(chess_state, turn, 1))
                 if selected == (x, y):
                     selected = ()
                     click = []
