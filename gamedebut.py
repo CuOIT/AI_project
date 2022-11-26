@@ -1,7 +1,9 @@
+import os
 import pygame
+import UI
 
-HEIGHT = 800
-WIDTH = 800
+HEIGHT=800
+WIDTH=800
 SCALE = HEIGHT / 8
 pieceImages = {} #dictionary
 turn = True
@@ -60,14 +62,15 @@ def checkMove(chess_state,click,turn):
         moveList = checkKnightMove(oldX, oldY, turn, chess_state)
 
     return moveList
-def moveChess(chess_state, click, turn):
+
+
+def moveChess(chess_state, click, turn,screen):
     oldX = click[0][0]
     oldY = click[0][1]
     newX = click[1][0]
     newY = click[1][1]
-
-    moveList=checkMove(chess_state,click,turn)
-
+    moveList = checkMove(chess_state, click, turn)
+    print(f"Available move: (x,y){moveList} ")
     validMove = False
     for pos in moveList:
         if (newX, newY) == pos:
@@ -80,6 +83,10 @@ def moveChess(chess_state, click, turn):
     # Check ăn chess khác màu
     if chess_state[newY][newX][0] == chess_state[oldY][oldX][0]:
         return False
+    checkPawnPromotion(chess_state, click, screen)
+    # elif chess_state[oldY][oldX] != "xx":
+    #     chess_state[newY][newX] = chess_state[oldY][oldX]
+    #     chess_state[oldY][oldX] = "xx"
     return True
 
 def update(chess_state, click):
@@ -132,6 +139,59 @@ def update(chess_state, click):
     chess_state[oldY][oldX] = "xx"
 
 
+
+#Quang
+
+def promoteChoice(screen, sideColor):
+    x=40
+    y=300
+    queen_btn=UI.Button(x, y, pygame.image.load("res/"+sideColor+"Queen.png"))
+    rook_btn=UI.Button(x+200, y, pygame.image.load("res/"+sideColor+"Rook.png"))
+    knight_btn=UI.Button(x+400,y, pygame.image.load("res/"+sideColor+"Knight.png"))
+    bishop_btn=UI.Button(x+600, y, pygame.image.load("res/"+sideColor+"Bishop.png"))
+    pause= True
+    piece =''
+    while pause:
+        queen_btn.draw(screen)
+        bishop_btn.draw(screen)
+        rook_btn.draw(screen)
+        knight_btn.draw(screen) 
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:                    
+                if queen_btn.draw(screen):
+                    piece= sideColor+ "Queen"
+                    pause = False
+                    return piece
+                elif rook_btn.draw(screen):
+                    piece =sideColor+"Rook"
+                    pause = False
+                    return piece
+                elif knight_btn.draw(screen):
+                    piece =sideColor+"Knight"
+                    pause = False
+                    return piece
+                elif bishop_btn.draw(screen):
+                    piece =sideColor+"Bishop"
+                    pause = False  
+                    return piece       
+        pygame.display.update()
+                             
+
+def checkPawnPromotion(chess_state, click, screen):
+    oldX = click[0][0] 
+    oldY = click[0][1]
+    newX = click[1][0]
+    newY = click[1][1]
+    if chess_state[0][newX] == 'wPawn':
+        chess_state[newY][newX] = chess_state[oldY][oldX]
+        chess_state[newY][newX] = promoteChoice(screen,'w')
+    if chess_state[7][newX]== 'bPawn':
+        chess_state[newY][newX] = chess_state[oldY][oldX]
+        chess_state[newY][newX] = promoteChoice(screen,'b')
+
+
+#End
+
 def checkPawnMove(x, y, turn, chess_state):
     moveList=[]
     if turn == True:
@@ -168,7 +228,6 @@ def checkPawnMove(x, y, turn, chess_state):
             if chess_state[y + 1][x + 1][0] == 'w':
                 pos = (x + 1, y + 1)
                 moveList.append(pos)
-
     return moveList
 
 
@@ -382,6 +441,7 @@ def main():
     
     loadImage(pieceImages)
     running = True
+
     while running:
         draws(screen,chess_state,click,turn)
         #draws(screen,selected)
@@ -404,11 +464,14 @@ def main():
                     selected = (x, y)
                     click.append(selected)
                     if len(click) == 2:
-                        if moveChess(chess_state, click, turn):
+                        if moveChess(chess_state, click, turn,screen):
                             turn = not turn
                             animation(click, screen, chess_state, clock)
                             
                             update(chess_state, click)
+                        #quang
+                        checkPawnPromotion(chess_state, click, screen)
+                        #end
                         click = []
                         selected = ()
 
@@ -420,4 +483,6 @@ def main():
 
 
 if __name__ == "__main__":
+    print(os.getcwd())
     main()
+
