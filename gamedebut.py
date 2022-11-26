@@ -1,7 +1,9 @@
+import os
 import pygame
+import UI
 
-HEIGHT = 800
-WIDTH = 800
+HEIGHT=800
+WIDTH=800
 SCALE = HEIGHT / 8
 
 
@@ -13,7 +15,7 @@ def loadImage(pieceImages):
 
 
 def draws(screen, selected, chess_state, click, turn):  # this function is to draw board and hightlight
-    colors = [pygame.Color("pink"), pygame.Color("white")]
+    colors = [pygame.Color((138, 120, 93)), pygame.Color((220, 211, 234))]
     for row in range(0, 8):
         for col in range(0, 8):
             color = colors[((row + col) % 2)]
@@ -34,6 +36,8 @@ def drawPieces(screen, pieceImages, chess_state):
                 continue
             else:
                 screen.blit(pieceImages[chess_state[l][c]], pygame.Rect(c * SCALE + 5, l * SCALE + 5, SCALE, SCALE))
+
+
 
 
 def checkMove(chess_state, click, turn):
@@ -66,29 +70,13 @@ def checkMove(chess_state, click, turn):
     return moveList
 
 
-def moveChess(chess_state, click, turn):
+def moveChess(chess_state, click, turn,screen):
     oldX = click[0][0]
     oldY = click[0][1]
     newX = click[1][0]
     newY = click[1][1]
-
-    '''piece = chess_state[oldY][oldX]
-    print(piece)
-    moveList = []  # List of valid moves
-
-    if "Pawn" in piece:
-        moveList = checkPawnMove(oldX, oldY, moveList, turn, chess_state)
-
-    elif "Rook" in piece:
-        moveList = checkRookMove(oldX, oldY, moveList, turn, chess_state)
-
-    elif "Bishop" in piece:
-        moveList = checkBishopMove(oldX, oldY, moveList, turn, chess_state)
-
-    elif "Queen" in piece:
-        moveList = checkQueenMove(oldX, oldY, moveList, turn, chess_state)'''
     moveList = checkMove(chess_state, click, turn)
-    print(moveList)
+    print(f"Available move: (x,y){moveList} ")
     validMove = False
     for pos in moveList:
         if (newX, newY) == pos:
@@ -106,11 +94,63 @@ def moveChess(chess_state, click, turn):
     chess_state[newY][newX] = chess_state[oldY][oldX]
     chess_state[oldY][oldX] = "xx"
 
+    checkPawnPromotion(chess_state, click, screen)
     # elif chess_state[oldY][oldX] != "xx":
     #     chess_state[newY][newX] = chess_state[oldY][oldX]
     #     chess_state[oldY][oldX] = "xx"
     return True
 
+#Quang
+
+def promoteChoice(screen, sideColor):
+    x=40
+    y=300
+    queen_btn=UI.Button(x, y, pygame.image.load("res/"+sideColor+"Queen.png"))
+    rook_btn=UI.Button(x+200, y, pygame.image.load("res/"+sideColor+"Rook.png"))
+    knight_btn=UI.Button(x+400,y, pygame.image.load("res/"+sideColor+"Knight.png"))
+    bishop_btn=UI.Button(x+600, y, pygame.image.load("res/"+sideColor+"Bishop.png"))
+    pause= True
+    piece =''
+    while pause:
+        queen_btn.draw(screen)
+        bishop_btn.draw(screen)
+        rook_btn.draw(screen)
+        knight_btn.draw(screen) 
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:                    
+                if queen_btn.draw(screen):
+                    piece= sideColor+ "Queen"
+                    pause = False
+                    return piece
+                elif rook_btn.draw(screen):
+                    piece =sideColor+"Rook"
+                    pause = False
+                    return piece
+                elif knight_btn.draw(screen):
+                    piece =sideColor+"Knight"
+                    pause = False
+                    return piece
+                elif bishop_btn.draw(screen):
+                    piece =sideColor+"Bishop"
+                    pause = False  
+                    return piece       
+        pygame.display.update()
+                             
+
+def checkPawnPromotion(chess_state, click, screen):
+    oldX = click[0][0] 
+    oldY = click[0][1]
+    newX = click[1][0]
+    newY = click[1][1]
+    if chess_state[0][newX] == 'wPawn':
+        chess_state[newY][newX] = chess_state[oldY][oldX]
+        chess_state[newY][newX] = promoteChoice(screen,'w')
+    if chess_state[7][newX]== 'bPawn':
+        chess_state[newY][newX] = chess_state[oldY][oldX]
+        chess_state[newY][newX] = promoteChoice(screen,'b')
+
+
+#End
 
 def checkPawnMove(x, y, turn, chess_state):
     moveList = []
@@ -148,7 +188,6 @@ def checkPawnMove(x, y, turn, chess_state):
             if chess_state[y + 1][x + 1][0] == 'w':
                 pos = (x + 1, y + 1)
                 moveList.append(pos)
-
     return moveList
 
 
@@ -307,6 +346,7 @@ def main():
     loadImage(pieceImages)
     turn = True
     running = True
+
     while running:
         draws(screen, selected, chess_state, click, turn)
         # draws(screen,selected)
@@ -326,8 +366,11 @@ def main():
                     selected = (x, y)
                     click.append(selected)
                     if len(click) == 2:
-                        if moveChess(chess_state, click, turn):
+                        if moveChess(chess_state, click, turn,screen):
                             turn = not turn
+                        #quang
+                        checkPawnPromotion(chess_state, click, screen)
+                        #end
                         click = []
                         selected = ()
 
@@ -339,4 +382,6 @@ def main():
 
 
 if __name__ == "__main__":
+    print(os.getcwd())
     main()
+
