@@ -88,7 +88,7 @@ def moveChess(chess_state, click, turn):
     elif "Queen" in piece:
         moveList = checkQueenMove(oldX, oldY, moveList, turn, chess_state)'''
     moveList = checkMove(chess_state, click, turn)
-    print(moveList)
+    
     validMove = False
     for pos in moveList:
         if (newX, newY) == pos:
@@ -220,7 +220,6 @@ def checkQueenMove(x, y, turn, chess_state):
     if checkBishopMove(x, y, turn, chess_state):
         for pos in checkBishopMove(x, y, turn, chess_state):
             moveList.append(pos)
-    print(moveList)
     return moveList
 
 
@@ -283,6 +282,18 @@ def turn_choose(chess_state, selected, turn):
 def highlightMove():
     pass
 
+def evaluatePoint(chess_state,pointPerPiece):
+    totalPoint=0
+    for line in chess_state:
+        for piece in line:
+            if piece=="xx":
+                pass
+            else:
+                totalPoint+=pointPerPiece[piece]
+    return totalPoint
+
+def miniMax():
+    pass; 
 
 def main():
     pygame.init()
@@ -299,8 +310,14 @@ def main():
                    ["xx", "xx", "xx", "xx", "xx", "xx", "xx", "xx"],
                    ["xx", "xx", "xx", "xx", "xx", "xx", "xx", "xx"],
                    ["wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn"],
-                   ["wRook", "wKnight", "wBishop", "wQueen", "wKing", "wBishop", "wKnight", "wRook"]
-                   ]
+                   ["wRook", "wKnight", "wBishop", "wQueen", "wKing", "wBishop", "wKnight", "wRook"]]
+    pointPerPiece={"bRook":-5,"wRook":5,
+           "bKnight":-3,"wKnight":3,
+           "bBishop":-3,"wBishop":3,
+           "bQueen":-9,"wQueen":9,
+           "bKing":-1000,"wKing":1000,
+           "bPawn":-1,"wPawn":1}
+                   
     selected = ()  # tuples
     click = []
     pieceImages = {}  # dictionary
@@ -334,6 +351,7 @@ def main():
                     elif len(click) == 1 and turn_choose(chess_state, (click[0][0], click[0][1]), turn) == False:
                         selected = ()
                         click = []
+                print(evaluatePoint(chess_state,pointPerPiece))
         clock.tick(15)
         pygame.display.flip()
 
