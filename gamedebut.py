@@ -1,18 +1,19 @@
 import pygame
+import UI
 
 HEIGHT = 800
 WIDTH = 800
 SCALE = HEIGHT / 8
-pieceImages = {} #dictionary
+colors = [pygame.Color("grey"), pygame.Color("white")]
+pieceImages = {} #dictionary image
 turn = True
+
 catle = {"wKR": True, "wQR": True, "bKR": True, "bQR": True}
 
-globalCheck = False
-globalMate = False
+globalCheck = False # check
+globalMate = False # check mate
 
 
-
-colors = [pygame.Color("pink"), pygame.Color("white")]
 def loadImage(pieceImages):
     pieces = ["bBishop", "bKing", "bKnight", "bPawn", "bQueen", "bRook", "wBishop", "wKing", "wPawn", "wQueen", "wRook",
            "wKnight"]
@@ -20,7 +21,7 @@ def loadImage(pieceImages):
         pieceImages[i] = pygame.transform.scale(pygame.image.load("res/" + i + ".png"), (SCALE-10, SCALE-10))
 
 def draws(screen,chess_state,click,turn):#this function is to draw board and hightlight
-    colors = [pygame.Color("pink"), pygame.Color("white")]
+    global colors
     for row in range(0, 8):
         for col in range(0, 8):
             color = colors[((row + col) % 2)]
@@ -45,7 +46,7 @@ def checkMove(chess_state,click,turn):
     moveList = []  # List of valid moves
     validMove = False
 
-    
+    # realstate = True when user move
     if "Pawn" in piece:
         moveList = checkPawnMove(oldX, oldY, turn, chess_state, True)
 
@@ -87,6 +88,8 @@ def moveChess(chess_state, click, turn):
         return False
     return True
 
+
+# update chessState after move
 def update(chess_state, click):
     oldX = click[0][0]
     oldY = click[0][1]
@@ -201,15 +204,11 @@ def checkPawnMove(x, y, turn, chess_state, realState):
             if chess_state[y + 1][x + 1][0] == 'w':
                 pos = (x + 1, y + 1)
                 if realState == True:
-                    if checkAcceptMove(chess_state, turn,x, y, x, y-1):
+                    if checkAcceptMove(chess_state, turn,x, y, x+1, y+1):
                         moveList.append(pos)
                 else:        
                     moveList.append(pos)
 
-    # # nếu vua đang bị chiếu
-    # if realState == True:
-    #     if KingInAttack(chess_state, turn) == True:
-    #         return acceptMove(chess_state, turn, x, y, moveList)
     
     return moveList
 
@@ -231,6 +230,8 @@ def checkRookMove(x, y, turn, chess_state, realState):
             if 0 <= newX < 8 and 0 <= newY < 8:  # Position on the board
                 if chess_state[newY][newX] == "xx":
                     pos = (newX, newY)
+                    # nếu bàn cờ là thật => check nước đi hợp lệ
+                    #nếu bàn cờ là ảo (tức đã đi 1 nước ảo để check xem nước đó có hợp lệ ko) => ko cần check nước hợp lệ
                     if realState == True:
                         if checkAcceptMove(chess_state, turn,x, y, newX, newY):
                             moveList.append(pos)
@@ -256,6 +257,7 @@ def checkRookMove(x, y, turn, chess_state, realState):
             
     return moveList
 
+# check accept moving - Vuz
 def checkAcceptMove(chess_state, turn, x, y ,newX, newY):
     temp = chess_state.copy() #copy bàn cờ
     piece1 = chess_state[y][x] # lưu lại con cờ ở vị trí sẽ đi
@@ -264,6 +266,7 @@ def checkAcceptMove(chess_state, turn, x, y ,newX, newY):
     temp[newY][newX] = piece1 # cập nhật bàn cờ ảo     
     temp[y][x] = "xx"
     
+    # nếu vua bị tấn công sau khi di chuyển => nước đi không hợp lệ => false
     if KingInAttack(temp, turn) == True:
         temp[newY][newX] = piece2 # cập nhật lại bàn cờ thật
         temp[y][x] = piece1
@@ -273,7 +276,7 @@ def checkAcceptMove(chess_state, turn, x, y ,newX, newY):
     temp[y][x] = piece1
     return True
     
-
+# Vuz don't use this function, can delete
 def acceptMove(chess_state, turn, x, y, moveList):
     temp = chess_state.copy() #copy bàn cờ
     piece1 = chess_state[y][x] # lưu lại con cờ ở vị trí sẽ đi
@@ -361,7 +364,7 @@ def checkKingMove(x, y, turn, board, realState):
         
     if realState == True:
         if (turn == True):
-            if catle["wKR"] == True and (board, True, 5) == True:
+            if catle["wKR"] == True and currentCastleRightKing(board, True, 5) == True:
                 moveList.append((6,7))
             if catle["wQR"] == True and currentCastleRightKing(board, True, 1) == True:
                 moveList.append((2,7))
@@ -433,23 +436,27 @@ def pieceInMove(piece, moveList, chess_state):
             return True
     return False    
 
+# check square (x,y) under attack - Vuz
 def squareInAttack(x,y,turn,chess_state):
+    
+    #get moveList when bishop on the square
     moveList = checkBishopMove(x,y,turn, chess_state, False)
-    # print(moveList)
+
+    # if enermy bishop in movelist => square under attack => retrun True
     if pieceInMove("Bishop", moveList, chess_state) == True:
         return True
+    
     moveList = checkKnightMove(x,y,turn, chess_state, False)
-    # print(moveList)
     if pieceInMove("Knight", moveList, chess_state) == True:
         return True
     
     moveList = checkRookMove(x,y,turn,chess_state, False)
-    # print(moveList)
+
     if pieceInMove("Rook", moveList, chess_state) == True:
         return True
     
     moveList = checkQueenMove(x,y,turn,chess_state, False)
-    # print(moveList)
+
     if pieceInMove("Queen", moveList, chess_state) == True:
         return True
     
@@ -464,30 +471,37 @@ def squareInAttack(x,y,turn,chess_state):
     
     return False
 
+# find piece's position on the chess_state - Vuz
 def findPiece(chess_state, piece):
     for i in range(0,8):
         for j in range(0,8):
             if chess_state[i][j] == piece:
                 return (i,j)
 
+# check - Vuz
 def KingInAttack(chess_state, turn):
     if turn == True:
         king = "wKing"
     else:
         king = "bKing"
+    # find King's position
     pos = findPiece(chess_state, king)
     x = pos[0]
     y = pos[1]
+    # check the King's square under attack
     if squareInAttack(y,x,turn,chess_state) == True:
         return True
     return False
-         
+
+# get all accept move     - Vuz
 def getAllMove(chess_state, turn):
     moveList = []
     if turn == True:
         color = "w"
     else:
         color = "b"
+    
+    # get all moveList of every piece on the state
     for j in range(0,8):
         for i in range(0,8):
             piece = chess_state[j][i]
@@ -512,18 +526,27 @@ def getAllMove(chess_state, turn):
                 moveList = moveList +  checkKnightMove(i, j, turn, chess_state, True)        
     return moveList
 
+# check mate - Vuz
 def checkMate(chess_state, turn):
+    #get all current accept move
     moveList = getAllMove(chess_state, turn)
+    
+    #if move is null
     if len(moveList) <= 0:
         return True
     return False
+#check current Castle 
 def currentCastleRightKing(chess_state, turn, c):
+    # if turn == True => white move => row = 7 else row = 0
     if turn == True:
         r = 7
     else:
         r = 0
+    # if king under attack => not castling = > false
     if KingInAttack(chess_state, turn) == True:
         return False
+    
+    # check square from left rook to King, if square under attack or any piece on the square => return false
     if chess_state[r][c] == "xx" \
         and chess_state[r][c+1] == "xx"\
             and chess_state[r][c+2] == "xx" \
@@ -532,6 +555,7 @@ def currentCastleRightKing(chess_state, turn, c):
                     if squareInAttack(i,r,turn,chess_state) == True:
                         return False
                 return True
+    # check square from right Rook to King 
     if chess_state[r][c] == "xx" and chess_state[r][c+1] == "xx" and "Rook" in chess_state[r][c+2]:
         for i in range(c,c+2):
             if squareInAttack(i,r, turn, chess_state) == True:
@@ -574,7 +598,7 @@ def animation(click, screen, chess_state, clock):
     
     dR = click[1][1] - click[0][1]
     dC = click[1][0] - click[0][0]
-    fps = 1
+    fps = 10
     fcount = (abs(dR) + abs(dC)) * fps
     for frame in range(fcount + 1):
         r = click[0][1] + dR*frame/fcount
@@ -602,6 +626,56 @@ def animation(click, screen, chess_state, clock):
         pygame.display.flip()
         clock.tick(60)    
     chess_state[click[0][1]][click[0][0]] = temp # trả piece về lại start_node để chạy tiếp update bàn cờ   
+
+def promoteChoice(screen, sideColor):
+    x=40
+    y=300
+    queen_btn=UI.Button(x, y, pygame.image.load("res/"+sideColor+"Queen.png"))
+    rook_btn=UI.Button(x+200, y, pygame.image.load("res/"+sideColor+"Rook.png"))
+    knight_btn=UI.Button(x+400,y, pygame.image.load("res/"+sideColor+"Knight.png"))
+    bishop_btn=UI.Button(x+600, y, pygame.image.load("res/"+sideColor+"Bishop.png"))
+    pause= True
+    piece =''
+    while pause:
+        queen_btn.draw(screen)
+        bishop_btn.draw(screen)
+        rook_btn.draw(screen)
+        knight_btn.draw(screen) 
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:                    
+                if queen_btn.draw(screen):
+                    piece= sideColor+ "Queen"
+                    pause = False
+                    return piece
+                elif rook_btn.draw(screen):
+                    piece =sideColor+"Rook"
+                    pause = False
+                    return piece
+                elif knight_btn.draw(screen):
+                    piece =sideColor+"Knight"
+                    pause = False
+                    return piece
+                elif bishop_btn.draw(screen):
+                    piece =sideColor+"Bishop"
+                    pause = False  
+                    return piece       
+        pygame.display.update()
+                             
+
+def checkPawnPromotion(chess_state, click, screen):
+    oldX = click[0][0] 
+    oldY = click[0][1]
+    newX = click[1][0]
+    newY = click[1][1]
+    if chess_state[0][newX] == 'wPawn':
+        chess_state[newY][newX] = chess_state[oldY][oldX]
+        chess_state[newY][newX] = promoteChoice(screen,'w')
+    if chess_state[7][newX]== 'bPawn':
+        chess_state[newY][newX] = chess_state[oldY][oldX]
+        chess_state[newY][newX] = promoteChoice(screen,'b')
+
+
+#End
 
 def main():
     global turn
@@ -636,15 +710,17 @@ def main():
         draws(screen,chess_state,click,turn)
        
         drawPieces(screen, pieceImages, chess_state)
-        if globalMate == True:
-            if turn == True:
-                drawText(screen, "Black win")
+        if globalCheck == True:
+            if globalMate == True:
+                if turn == True:
+                    drawText(screen, "Black win")
+                else:
+                    drawText(screen, "White win")
             else:
-                drawText(screen, "White win")
-        else:
-            if globalCheck == True:
-                drawText(screen, "Check rui hoho")
-        for event in pygame.event.get():
+                drawText(screen, "Check")
+        elif globalCheck == False and globalMate == True:
+            drawText(screen, "Draw")        
+        for event in pygame.event.get():  
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -664,12 +740,14 @@ def main():
                         if moveChess(chess_state, click, turn):
                             
                             turn = not turn
-
                             animation(click, screen, chess_state, clock) 
+
                             update(chess_state, click)
+                            checkPawnPromotion(chess_state, click, screen)
                             
-                            globalCheck = KingInAttack(chess_state, turn)
-                            globalMate = checkMate(chess_state, turn)
+                            globalCheck = KingInAttack(chess_state, turn) # check King under attack
+                            
+                            globalMate = checkMate(chess_state, turn) # check Mate
                             
                         click = []
                         selected = ()
@@ -677,6 +755,8 @@ def main():
                     elif len(click) == 1 and turn_choose(chess_state, (click[0][0], click[0][1]), turn) == False:
                         selected = ()
                         click = []
+                
+                
         clock.tick(15)
         pygame.display.flip()
 
