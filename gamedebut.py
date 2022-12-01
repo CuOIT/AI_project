@@ -678,7 +678,7 @@ def generateChessState(chess_state, turn):
                 if turn_choose(chess_state, (x,y), turn) == False:
                     continue
 
-                for pos in checkMove(tempState, click, turn_choose(tempState, (x,y), turn)):
+                for pos in checkMove(tempState, click, turn):
                     newX = pos[0]
                     newY = pos[1]
                     tempState[newY][newX] = tempState[y][x]
@@ -754,9 +754,9 @@ def main():
 
                             update(chess_state, click)
                             checkPawnPromotion(chess_state, click, screen)
-                            listState = generateChessState(chess_state, turn)
 
                             turn = not turn
+                            listState = generateChessState(chess_state,turn)
 
                             globalCheck = KingInAttack(chess_state, turn)
                             globalMate = checkMate(chess_state, turn)
