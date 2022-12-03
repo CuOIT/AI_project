@@ -35,7 +35,7 @@ def draws(screen,chess_state,click,turn):#this function is to draw board and hig
         for col in range(0, 8):
             color = colors[((row + col) % 2)]
             pygame.draw.rect(screen, color, pygame.Rect(col * SCALE, row * SCALE, SCALE, SCALE))     
-            if len(click) >= 1:
+            if len(click) == 1:
                 highlightMove(screen, click, chess_state, turn)
 
 def drawPieces(screen, pieceImages, chess_state):
@@ -654,7 +654,8 @@ def highlightMove(screen,click, chess_state, turn):
         moveList=checkMove(chess_state,click,turn)
         for i in moveList:
             pygame.draw.rect(screen,pygame.Color(198,226,255),pygame.Rect(i[0]*SCALE+1,i[1]*SCALE+1, SCALE-2 ,SCALE - 2))
-
+def highlightCheck(screen,chess):
+    pass
 def animation(click, screen, chess_state, clock):
     
     dR = click[1][1] - click[0][1]
@@ -769,10 +770,10 @@ def checkPawnPromotion(chess_state, click, screen):
         chess_state[newY][newX] = promoteChoice(screen,'b')
             
 def miniMax(chess_state):
-    state_value=maxState_Value(chess_state,3)
+    state_value=maxState_Value(chess_state,2)
     return state_value[0]
 def maxState_Value(chess_state,depth):
-    if depth==0:
+    if depth==0 or checkMate(chess_state,False):
         state_value=(chess_state,evaluatePoint(chess_state,pointPerPiece))
         return state_value
     else:
@@ -838,10 +839,10 @@ def main():
     loadImage(pieceImages)
     running = True
 
+    draws(screen,chess_state,click,turn)
+    drawPieces(screen, pieceImages, chess_state)
     while running:
-        draws(screen,chess_state,click,turn)
 
-        drawPieces(screen, pieceImages, chess_state)
         if globalCheck == True:
             if globalMate == True:
                 if turn == True:
@@ -850,50 +851,53 @@ def main():
                     drawText(screen, "White win")
             else:
                 drawText(screen, "Check rui hoho")
+        if turn==True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    location = pygame.mouse.get_pos()
+                    x = int(location[0] / SCALE)
+                    y = int(location[1] / SCALE)
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                location = pygame.mouse.get_pos()
-                x = int(location[0] / SCALE)
-                y = int(location[1] / SCALE)
-
-                if selected == (x, y):
-                    selected = ()
-                    click = []
-                else:
-                    selected = (x, y)
-                    click.append(selected)
-                    if len(click) == 2:
-                        if moveChess(chess_state, click, turn, screen):
-                            animation(click, screen, chess_state, clock)
-
-                            update(chess_state, click)
-                            checkPawnPromotion(chess_state, click, screen)
-
-                            turn = not turn
-                            listState = generateChessState(chess_state,turn)
-                            for i in listState:
-                                for line in i:
-                                    print(line)
-                                print("---")
-                            globalCheck = KingInAttack(chess_state, turn)
-                            globalMate = checkMate(chess_state, turn)
-
-                        click = []
-                        selected = ()
-
-                    elif len(click) == 1 and turn_choose(chess_state, (click[0][0], click[0][1]), turn) == False:
+                    if selected == (x, y):
                         selected = ()
                         click = []
-                    if turn == False:
-                        chess_state=miniMax(chess_state)
-                    #       for line in chess_state:
-                    #         print(line)
-                            
-                        turn = not turn
+                    else:
+                        selected = (x, y)
+                        click.append(selected)
+                        if len(click) == 2:
+                            if moveChess(chess_state, click, turn, screen):
+                                animation(click, screen, chess_state, clock)
+
+                                update(chess_state, click)
+                                checkPawnPromotion(chess_state, click, screen)
+
+                                turn = not turn
+                                # listState = generateChessState(chess_state,turn)
+                                # for i in listState:
+                                #     for line in i:
+                                #         print(line)
+                                #     print("---")
+                                globalCheck = KingInAttack(chess_state, turn)
+                                globalMate = checkMate(chess_state, turn)
+
+                            click = []
+                            selected = ()
+
+                        elif len(click) == 1 :
+                            if turn_choose(chess_state, (click[0][0], click[0][1]), turn) == False:
+                                selected = ()
+                                click = []
+        else:
+            chess_state=miniMax(chess_state)
+        #       for line in chess_state:
+        #         print(line)
+                
+            turn = not turn
         clock.tick(15)
+        draws(screen,chess_state,click,turn)
+        drawPieces(screen, pieceImages, chess_state)
         pygame.display.flip()
 
 if __name__ == "__main__":
