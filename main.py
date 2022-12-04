@@ -49,7 +49,6 @@ def main():
                                 rules.update(chess_state,list_chess_state, click)
                                 rules.checkPawnPromotion(chess_state, click, screen)
                                 turn=rules.switchTurn(turn)
-                                checkMate=rules.checkNoMove(chess_state,turn)
                                 print(checkMate)
                             click = []
                             selected = ()
@@ -68,7 +67,7 @@ def main():
             chess_state=AI.miniMax(chess_state)
         #       for line in chess_state:
         #         print(line)
-                
+            checkMate=rules.checkNoMove(chess_state,turn)             
             turn = rules.switchTurn(turn)
         clock.tick(15)
         UI.draws(screen,chess_state,click,turn)

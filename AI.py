@@ -164,7 +164,7 @@ def miniMax(chess_state):
     state_value=maxState_Value(chess_state,2)
     return state_value[0]
 def maxState_Value(chess_state,depth):
-    if depth==0 or rules.checkMate(chess_state,'b'):
+    if depth==0 or rules.checkNoMove(chess_state,'b'):
         state_value=(chess_state,evaluatePoint(chess_state,pointPerPiece))
         return state_value
     else:
@@ -180,7 +180,7 @@ def maxState_Value(chess_state,depth):
         return (s,v)
 
 def minState_Value(chess_state,depth):
-    if depth==0 or rules.checkMate(chess_state,'w'):
+    if depth==0 or rules.checkNoMove(chess_state,'w'):
         state_value=(chess_state,evaluatePoint(chess_state,pointPerPiece))
         print(state_value[1])
         return state_value

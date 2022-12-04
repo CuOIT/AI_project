@@ -324,10 +324,11 @@ def findPiece(chess_state, piece):
         for j in range(0,8):
             if chess_state[i][j] == piece:
                 return (i,j)
-
+    return None
 def KingInAttack(chess_state,turn):
-    #return which king in attack or False
     pos = findPiece(chess_state, turn+"King")
+    if pos==None:
+        return True
     x = pos[0]
     y = pos[1]
     if squareInAttack(x,y,turn,chess_state) == True:

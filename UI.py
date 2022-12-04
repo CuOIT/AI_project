@@ -1,5 +1,5 @@
 import pygame
-import sys
+import os
 import rules
 HEIGHT=800
 WIDTH=800
