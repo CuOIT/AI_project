@@ -1,5 +1,7 @@
 import rules
 import copy
+import time
+_DEPTH = 2
 pointPerPiece={ "bPawn"     :-10,    "wPawn"     :10,
                 "bKnight"   :-30,    "wKnight"   :30,
                 "bBishop"   :-30,    "wBishop"   :30,
@@ -160,8 +162,8 @@ def evaluatePoint(chess_state,pointPerPiece):
                 func=globals()[piece+"Point"]
                 totalPoint=totalPoint+pointPerPiece[piece]+func[row][col]
     return -totalPoint
-def miniMax(chess_state):
-    state_value=maxState_Value(chess_state,2)
+def miniMax(chess_state, depth= _DEPTH):
+    state_value=maxState_Value(chess_state,depth)
     return state_value[0]
 def maxState_Value(chess_state,depth):
     if depth==0 or rules.checkNoMove(chess_state,'b'):
@@ -194,3 +196,57 @@ def minState_Value(chess_state,depth):
                 v=max[1]
                 s=gChessState
         return (s,v)
+# Vũ cắt tỉa :))
+def alpha_beta_Search(chess_state, depth = _DEPTH):
+    stateValue = maxValue(chess_state, -99999, 99999, depth)
+    return stateValue[0]
+
+def maxValue(chess_state, a, b, depth):
+    if depth == 0 or rules.checkNoMove(chess_state, 'b'):
+        state_value = (chess_state, evaluatePoint(chess_state,pointPerPiece))
+        print(state_value[1])
+        return state_value
+    else:
+        v= -99999
+        successors = generateChessState(chess_state, 'b')
+        s = successors[0]
+        for gChessState in successors:
+            max = minValue(gChessState, a, b, depth-1)
+            if v < max[1]:
+                v = max[1]
+                s = gChessState
+            if v >= b: # check v >= beta
+                # print("a va b la:",a,b)
+                # time.sleep(3)
+                return (s,v)
+            if v > a: # a = max(a,v)
+                a = v
+        # print("a va b la:",a,b)
+        # time.sleep(3)
+        return (s,v)
+
+def minValue(chess_state, a, b, depth):
+    if depth == 0 or rules.checkNoMove(chess_state, 'w'):
+        state_value = (chess_state, evaluatePoint(chess_state,pointPerPiece))
+        print(state_value[1])
+        return state_value
+    else:
+        v= 99999
+        successors = generateChessState(chess_state, 'w')
+        s = successors[0]
+        for gChessState in successors:
+            min = maxValue(gChessState, a, b, depth-1)
+            if v > min[1]:
+                v = min[1]
+                s = gChessState
+            if v <= a: # check v<= alpha
+                # print("a va b la:",a,b)
+                # time.sleep(3)
+                return (s,v)
+            if v < b: # b = min(v,b)
+                b = v
+        # print("a va b la:",a,b)
+        # time.sleep(3)
+        return (s,v)
+            
+        

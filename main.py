@@ -27,7 +27,7 @@ def main():
     running = True
     while running:
         if checkMate:
-            print("Chieu tuong")
+            print("Check Mate")
             UI.drawText(screen,"Black win" if turn=='w' else "White win")
         if turn=='w' and True:
             for event in pygame.event.get():
@@ -49,6 +49,7 @@ def main():
                                 rules.update(chess_state,list_chess_state, click)
                                 rules.checkPawnPromotion(chess_state, click, screen)
                                 turn=rules.switchTurn(turn)
+                                # UI.animation(click, screen, chess_state, clock, turn)
                                 print(checkMate)
                             click = []
                             selected = ()
@@ -64,7 +65,8 @@ def main():
                         chess_state=list_chess_state.pop()
                         turn=rules.switchTurn(turn)
         else:
-            chess_state=AI.miniMax(chess_state)
+            # chess_state=AI.miniMax(chess_state)
+            chess_state = AI.alpha_beta_Search(chess_state)
         #       for line in chess_state:
         #         print(line)
             checkMate=rules.checkNoMove(chess_state,turn)             

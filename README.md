@@ -9,4 +9,4 @@
 5. Đánh giá tổng giá trị bàn cờ thông qua giá trị của quân cờ + giá trị quân cờ tại vị trí hiện tại của nó
 
 #Bug:
-1. Sau khi undo bước nhập thành thì k nhập thành 
+1. Sau khi undo bước nhập thành thì k nhập thành => bug to lắm :))
