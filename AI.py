@@ -145,8 +145,16 @@ def generateChessState(chess_state, turn):
                     tempState = copy.deepcopy(chess_state)
                     newX = pos[0]
                     newY = pos[1]
-                    tempState[newX][newY] = tempState[x][y]
-                    tempState[x][y] = "xx"
+
+                    if tempState[x][y] == "bPawn" and newX == 7:
+                        tempState[newX][newY] = "bQueen"
+                        tempState[x][y] = "xx"
+
+                    elif tempState[x][y] == "bKing" and ((newX, newY) == (0,6) or (newX, newY) == (0,1)):
+                        rules.update(tempState, [], [(x,y), (newX, newY)])
+                    else:
+                        tempState[newX][newY] = tempState[x][y]
+                        tempState[x][y] = "xx"
                     list.append(tempState)
 
     return list
