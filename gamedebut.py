@@ -112,6 +112,7 @@ def update(chess_state, click):
     newY = click[1][1]
     # Cập nhật lại bàn cờ
     chess = copy.deepcopy(chess_state) #copy trang thai ban co
+    
     #neu xe di chuyen
     if "Rook" in chess_state[oldY][oldX]:
         if oldY == 7 and oldX == 0:
@@ -122,10 +123,19 @@ def update(chess_state, click):
             catle["bQR"] = False
         elif oldX == 7 and oldY == 0:
             catle["bKR"] = False
-    
+       
     # neu nhap thanh thi cap nhat lai con xe
-    if "King" in chess_state[oldY][oldX]:
-        if newX - oldX == 2:
+    elif "King" in chess_state[oldY][oldX]:
+            #neu tuong di chuyen
+        if newX - oldX == 1 or oldX - newX == 1 or newY - oldY == 1 or oldY - newY == 1:
+            if oldY == 7 and oldX == 4: 
+                catle["wKR"] = False
+                catle["wQR"] = False
+            elif oldY == 0 and oldX == 4:
+                catle["bQR"] = False
+                catle["bKR"] = False
+        
+        elif newX - oldX == 2:
             if chess_state[oldY][oldX] == "wKing":
                 catle["wKR"] = False
                 catle["wQR"] = False
@@ -142,6 +152,7 @@ def update(chess_state, click):
             else:
                 catle["bQR"] = False
                 catle["bKR"] = False
+                
         elif oldX - newX == 2:
             if chess_state[oldY][oldX] == "wKing":
                 catle["wKR"] = False
@@ -708,14 +719,38 @@ def main():
                         selected = ()
                         click = []
             elif event.type == pygame.KEYDOWN:
+                global catle
                 if event.key == pygame.K_LCTRL: #bam ctrl trai de goi ham undo
                     chess_state = undoMove(chess_state) 
                     turn = not turn
+                    
+                    if chess_state == [["bRook", "bKnight", "bBishop", "bQueen", "bKing", "bBishop", "bKnight", "bRook"],
+                                    ["bPawn", "bPawn", "bPawn", "bPawn", "bPawn", "bPawn", "bPawn", "bPawn"],
+                                    ["xx", "xx", "xx", "xx", "xx", "xx", "xx", "xx"],
+                                    ["xx", "xx", "xx", "xx", "xx", "xx", "xx", "xx"],
+                                    ["xx", "xx", "xx", "xx", "xx", "xx", "xx", "xx"],
+                                    ["xx", "xx", "xx", "xx", "xx", "xx", "xx", "xx"],
+                                    ["wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn"],
+                                    ["wRook", "wKnight", "wBishop", "wQueen", "wKing", "wBishop", "wKnight", "wRook"]
+                                    ]:
+                        turn = True
+                    if chess_state[0][4] == "bKing":
+                        if chess_state[0][0] == "bRook":
+                            catle["bQR"] = True
+                        if chess_state[0][7] =="bRook":
+                            catle["bKR"] = True
+                    if chess_state[7][4] == "wKing":
+                        if chess_state[7][0] == "wRook":
+                            catle["wQR"] = True
+                        if chess_state[7][7] == "wRook":
+                            catle["wKR"] = True
+                     
                 elif event.key == pygame.K_r: #bam r de reset ban co
+                    global list_chess_state
+                    while(len(list_chess_state) != 0):
+                        list_chess_state.pop()
                     drawText(screen, "You're just restart this game!")
                     chess_state = reset(chess_state) 
-                    # list_chess_state = {}
-                    global catle
                     turn = True
                     catle = {"wKR": True, "wQR": True, "bKR": True, "bQR": True}
         clock.tick(15)
