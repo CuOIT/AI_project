@@ -7,7 +7,7 @@ pointPerPiece={ "bPawn"     :-10,    "wPawn"     :10,
                 "bBishop"   :-30,    "wBishop"   :30,
                 "bRook"     :-50,    "wRook"     :50,
                 "bQueen"    :-90,    "wQueen"    :90,
-                "bKing"     :-1000, "wKing"     :1000}
+                "bKing"     :-1000,  "wKing"     :1000}
 
 wPawnPoint=[
     [20.0,  20.0,  20.0,  20.0,  20.0,  20.0,  20.0,  20.0],
@@ -150,7 +150,7 @@ def generateChessState(chess_state, turn):
                         tempState[newX][newY] = "bQueen"
                         tempState[x][y] = "xx"
 
-                    elif tempState[x][y] == "bKing" and ((newX, newY) == (0,6) or (newX, newY) == (0,1)):
+                    elif tempState[x][y] == "bKing" and ((newX, newY) == (0,6) or (newX, newY) == (0,2)):
                         rules.update(tempState, [], [(x,y), (newX, newY)])
                     else:
                         tempState[newX][newY] = tempState[x][y]

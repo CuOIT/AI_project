@@ -28,8 +28,12 @@ def main():
     while running:
         if checkMate:
             print("Check Mate")
-            UI.drawText(screen,"Black win" if turn=='w' else "White win")
-        if turn=='w' and True:
+            if turn == 'w':
+                UI.drawText(screen, "Black win!")
+            else:
+                UI.drawText(screen, "White win!")
+            # UI.drawText(screen,"Black win" if turn=='w' else "White win")
+        if turn =='w' and True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
@@ -59,11 +63,17 @@ def main():
                                 selected = ()
                                 click = []
                 elif event.type==pygame.KEYDOWN:
+                    global castle
                     if event.key==pygame.K_LCTRL and len(list_chess_state)!=0:
                         print("stack co: ",len(list_chess_state))
                         print(list_chess_state[-1])
                         chess_state=list_chess_state.pop()
-                        turn=rules.switchTurn(turn)
+                        turn = 'w'
+                        castle = rules.check_castle(chess_state)
+                        
+                    elif event.key==pygame.K_r:
+                        chess_state = rules.reset_Board(chess_state)
+                        turn = 'w'
         else:
             # chess_state=AI.miniMax(chess_state)
             chess_state = AI.alpha_beta_Search(chess_state)

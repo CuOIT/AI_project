@@ -27,12 +27,21 @@ def update(chess_state, list_chess_state,click):
             main.castle["wKR"] = False
         elif oldX == 0 and oldY == 0:
             main.castle["bQR"] = False
-        elif oldX== 0 and oldY == 7:
+        elif oldX == 0 and oldY == 7:
             main.castle["bKR"] = False
     
     # neu nhap thanh thi cap nhat lai con xe
-    if "King" in chess_state[oldX][oldY]:
-        if newY - oldY== 2:
+    elif "King" in chess_state[oldX][oldY]:
+             #neu tuong di chuyen
+        if newX - oldX == 1 or oldX - newX == 1 or newY - oldY == 1 or oldY - newY == 1:
+            if oldY == 4 and oldX == 7: 
+                main.castle["wKR"] = False
+                main.castle["wQR"] = False
+            elif oldY == 4 and oldX == 0:
+                main.castle["bQR"] = False
+                main.castle["bKR"] = False
+                
+        elif newY - oldY == 2:
             if chess_state[oldX][oldY] == "wKing":
                 main.castle["wKR"] = False
                 main.castle["wQR"] = False
@@ -49,8 +58,10 @@ def update(chess_state, list_chess_state,click):
             else:
                 main.castle["bQR"] = False
                 main.castle["bKR"] = False
+                
             chess_state[newX][newY+1] = chess_state[newX][newY-2]
             chess_state[newX][newY-2] = "xx"
+            
     chess_state[newX][newY] = chess_state[oldX][oldY]
     chess_state[oldX][oldY] = "xx"
 
@@ -325,6 +336,7 @@ def findPiece(chess_state, piece):
             if chess_state[i][j] == piece:
                 return (i,j)
     return None
+
 def KingInAttack(chess_state,turn):
     pos = findPiece(chess_state, turn+"King")
     if pos==None:
@@ -384,7 +396,35 @@ def currentCastleRightKing(chess_state, turn, c):
     return False
 
 def switchTurn(turn):
-    if turn=='w':
+    if turn == 'w':
         return 'b'
     else:
         return 'w'
+    
+def reset_Board(chess_state):
+    chess_state = [["bRook", "bKnight", "bBishop", "bQueen", "bKing", "bBishop", "bKnight", "bRook"],
+                    ["bPawn", "bPawn", "bPawn", "bPawn", "bPawn", "bPawn", "bPawn", "bPawn"],
+                    ["xx", "xx", "xx", "xx", "xx", "xx", "xx", "xx"],
+                    ["xx", "xx", "xx", "xx", "xx", "xx", "xx", "xx"],
+                    ["xx", "xx", "xx", "xx", "xx", "xx", "xx", "xx"],
+                    ["xx", "xx", "xx", "xx", "xx", "xx", "xx", "xx"],
+                    ["wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn"],
+                    ["wRook", "wKnight", "wBishop", "wQueen", "wKing", "wBishop", "wKnight", "wRook"]
+                    ]
+    main.castle = {"wKR": True, "wQR": True, "bKR": True, "bQR": True}                      
+    return chess_state
+
+def check_castle(chess_state):
+    if chess_state[0][4] == "bKing":
+        if chess_state[0][0] == "bRook":
+            main.castle["bQR"] = True
+        if chess_state[0][7] =="bRook":
+            main.castle["bKR"] = True
+    if chess_state[7][4] == "wKing":
+        if chess_state[7][0] == "wRook":
+            main.castle["wQR"] = True
+        if chess_state[7][7] == "wRook":
+            main.castle["wKR"] = True
+    return main.castle
+
+    
