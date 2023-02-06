@@ -1,6 +1,7 @@
 import pygame
 import os
 import rules
+import copy
 HEIGHT=800
 WIDTH=800
 SCALE = HEIGHT / 8
@@ -54,6 +55,7 @@ def highlightMove(screen,click, chess_state, turn):
             pygame.draw.rect(screen,pygame.Color(198,226,255),pygame.Rect(pos[1]*SCALE+1,pos[0]*SCALE+1, SCALE-2 ,SCALE - 2))
             if chess_state[pos[0]][pos[1]] != "xx":
                 screen.blit(pieceImages[chess_state[pos[0]][pos[1]]], pygame.Rect(pos[1] * SCALE+5, pos[0] * SCALE+5, SCALE, SCALE))
+
 def drawText(screen, text):
     font = pygame.font.SysFont("Time new roman", 60, True, False)
     textObject = font.render(text, 0, pygame.Color('Red'))
