@@ -367,7 +367,7 @@ def checkNoMove(chess_state, turn):
     return True
 
 def checkMate(chess_state, turn):
-    return checkNoMove(chess_state,turn) and KingInAttack(chess_state,turn)
+    return checkNoMove(chess_state,turn) #and KingInAttack(chess_state,turn)
 
 def currentCastleRightKing(chess_state, turn, c):
     # if wturn == True => white move => row = 7 else row = 0
