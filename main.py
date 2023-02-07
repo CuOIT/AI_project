@@ -98,8 +98,6 @@ def main():
                 # chess_state=AI.miniMax(chess_state)
                 startTime = time.time()
                 chess_state = AI.alpha_beta_Search(chess_state)
-            #       for line in chess_state:
-            #         print(line)
                 checkMate = rules.checkNoMove(chess_state, turn)
                 endTime = time.time()
 
