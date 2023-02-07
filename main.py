@@ -32,6 +32,8 @@ def main():
     UI.setUp(screen, chess_state)
     running = True
     tbT = 0
+    UI.displayDepth(screen, (str)(AI._DEPTH), 840, 80)
+
     while running:
         UI.draws(screen, chess_state, click, turn)
         if checkMate == True:
