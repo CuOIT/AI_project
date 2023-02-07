@@ -2,17 +2,20 @@ import pygame
 import os
 import rules
 import copy
-HEIGHT=800
-WIDTH=800
+HEIGHT = 800
+WIDTH = 800
 SCALE = HEIGHT / 8
 colors = [pygame.Color("pink"), pygame.Color("white")]
 pieceImages = {}
+
+
 class Button():
     def __init__(self, x, y, image):
         self.image = image
         self.rect = self.image.get_rect()
-        self.rect.topleft=(x,y)
-        self.clicked= False       
+        self.rect.topleft = (x, y)
+        self.clicked = False
+
     def draw(self, surface):
         surface.blit(self.image, (self.rect.x, self.rect.y))
         pygame.display.update()
@@ -20,41 +23,56 @@ class Button():
         action = False
         if self.rect.collidepoint(pos):
             print("hover")
-            if pygame.mouse.get_pressed()[0] ==1 and self.clicked == False:
+            if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
                 print("clicked")
-                self.clicked ==True
-                action = True 
-        
+                self.clicked == True
+                action = True
+
         return action
-def setUp(screen,chess_state):
+
+
+def setUp(screen, chess_state):
     pieces = ["bRook", "bKnight", "bBishop", "bQueen", "bKing", "bPawn",
               "wRook", "wKnight", "wBishop", "wQueen", "wKing", "wPawn"]
     for i in pieces:
-        pieceImages[i] = pygame.transform.scale(pygame.image.load("res/" + i + ".png"), (SCALE-10, SCALE-10))
-    draws(screen,chess_state,click=[],turn='w')
-def draws(screen,chess_state,click,turn):#this function is to draw board and hightlight
+        pieceImages[i] = pygame.transform.scale(
+            pygame.image.load("res/" + i + ".png"), (SCALE-10, SCALE-10))
+    draws(screen, chess_state, click=[], turn='w')
+
+
+def draws(screen, chess_state, click, turn):  # this function is to draw board and hightlight
     for row in range(0, 8):
         for col in range(0, 8):
             color = colors[((row + col) % 2)]
-            pygame.draw.rect(screen, color, pygame.Rect(col * SCALE, row * SCALE, SCALE, SCALE))
+            pygame.draw.rect(screen, color, pygame.Rect(
+                col * SCALE, row * SCALE, SCALE, SCALE))
             if "King" in chess_state[row][col]:
-                if rules.KingInAttack(chess_state,chess_state[row][col][0]) :
-                    color=(255,88,88)
-                    pygame.draw.rect(screen, color, pygame.Rect(col * SCALE, row * SCALE, SCALE, SCALE))   
+                if rules.KingInAttack(chess_state, chess_state[row][col][0]):
+                    color = (255, 88, 88)
+                    pygame.draw.rect(screen, color, pygame.Rect(
+                        col * SCALE, row * SCALE, SCALE, SCALE))
             if chess_state[row][col] == "xx":
                 continue
             else:
-                screen.blit(pieceImages[chess_state[row][col]], pygame.Rect(col * SCALE+5, row * SCALE+5, SCALE, SCALE))
+                screen.blit(pieceImages[chess_state[row][col]], pygame.Rect(
+                    col * SCALE+5, row * SCALE+5, SCALE, SCALE))
     if len(click) == 1:
         highlightMove(screen, click, chess_state, turn)
-def highlightMove(screen,click, chess_state, turn):
-        pygame.draw.rect(screen, pygame.Color("green"), pygame.Rect(click[0][1] * SCALE, click[0][0] * SCALE, SCALE, SCALE))
-        screen.blit(pieceImages[chess_state[click[0][0]][click[0][1]]], pygame.Rect(click[0][1] * SCALE+5, click[0][0] * SCALE+5, SCALE, SCALE))
-        moveList=rules.moveList(chess_state,click,turn)
+
+
+def highlightMove(screen, click, chess_state, turn):
+        pygame.draw.rect(screen, pygame.Color("green"), pygame.Rect(
+            click[0][1] * SCALE, click[0][0] * SCALE, SCALE, SCALE))
+        screen.blit(pieceImages[chess_state[click[0][0]][click[0][1]]], pygame.Rect(
+            click[0][1] * SCALE+5, click[0][0] * SCALE+5, SCALE, SCALE))
+        moveList = rules.moveList(chess_state, click, turn)
         for pos in moveList:
-            pygame.draw.rect(screen,pygame.Color(198,226,255),pygame.Rect(pos[1]*SCALE+1,pos[0]*SCALE+1, SCALE-2 ,SCALE - 2))
+            pygame.draw.rect(screen, pygame.Color(198, 226, 255), pygame.Rect(
+                pos[1]*SCALE+1, pos[0]*SCALE+1, SCALE-2, SCALE - 2))
             if chess_state[pos[0]][pos[1]] != "xx":
-                screen.blit(pieceImages[chess_state[pos[0]][pos[1]]], pygame.Rect(pos[1] * SCALE+5, pos[0] * SCALE+5, SCALE, SCALE))
+                screen.blit(pieceImages[chess_state[pos[0]][pos[1]]], pygame.Rect(
+                    pos[1] * SCALE+5, pos[0] * SCALE+5, SCALE, SCALE))
+
 
 def drawText(screen, text):
     font = pygame.font.SysFont("Time new roman", 60, True, False)
@@ -64,7 +82,16 @@ def drawText(screen, text):
     screen.blit(textObject, textLocation)
     textObject = font.render(text, 0, pygame.Color('Red'))
     screen.blit(textObject, textLocation.move(2, 2))
+
+
+def displayTextAt(screen, text, x, y):
+    font = pygame.font.SysFont('Time new roman', 30) 
+    text = font.render(f"Time: {text}", True, (255,255,255))
+    screen.blit(text,(x,y)) 
+
     
+    
+
 def animation(click, screen, chess_state, clock,turn):
     
     dR = click[1][0] - click[0][0]
