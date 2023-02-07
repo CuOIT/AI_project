@@ -379,16 +379,18 @@ def currentCastleRightKing(chess_state, turn, c):
     if KingInAttack(chess_state, turn) == (turn+"King"):
         return False
     # check square from left rook to King, if square under attack or any piece on the square => return false
-    if chess_state[r][c] == "xx" \
-        and chess_state[r][c+1] == "xx"\
-            and chess_state[r][c+2] == "xx" \
+    if chess_state[r][c] == "xx" and squareInAttack(r, c, turn, chess_state) \
+        and chess_state[r][c+1] == "xx" and squareInAttack(r, c+1, turn, chess_state)\
+            and chess_state[r][c+2] == "xx" and squareInAttack(r, c+2, turn, chess_state) \
             and "Rook" in chess_state[r][c-1] :
                 for i in range(c,c+3):
                     if squareInAttack(r,c,turn,chess_state) == True:
                         return False
                 return True
     # check square from right Rook to King 
-    if chess_state[r][c] == "xx" and chess_state[r][c+1] == "xx" and "Rook" in chess_state[r][c+2]:
+    if chess_state[r][c] == "xx" and squareInAttack(r, c, turn, chess_state)\
+        and chess_state[r][c+1] == "xx" and squareInAttack(r, c+1, turn, chess_state)\
+            and "Rook" in chess_state[r][c+2]:
         for i in range(c,c+2):
             if squareInAttack(r,c, turn, chess_state) == True:
                 return False

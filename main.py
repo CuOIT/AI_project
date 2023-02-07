@@ -26,13 +26,13 @@ def main():
     UI.setUp(screen,chess_state)
     running = True
     while running:
-        UI.draws(screen,chess_state,click,turn)
+        # UI.draws(screen,chess_state,click,turn)
         if checkMate == True:
-    
+            UI.draws(screen,chess_state,click,turn)
             # print("Check Mate")
             if turn == 'w':
                 UI.drawText(screen, "White win!")
-            else:
+            elif turn == 'b':
                 UI.drawText(screen, "Black win!")
             for event in pygame.event.get():
                 if event.type==pygame.KEYDOWN:
@@ -42,8 +42,7 @@ def main():
                         checkMate = False
                         chess_state = rules.reset_Board(chess_state)
                         turn = 'w'
-            
-            # UI.drawText(screen,"Black win" if turn=='w' else "White win")
+            list_chess_state.clear()
         else:
             if turn =='w' and True:
                 for event in pygame.event.get():
@@ -64,6 +63,7 @@ def main():
                                     #UI.animation(click, screen, chess_state, clock,turn)
                                     rules.update(chess_state,list_chess_state, click)
                                     rules.checkPawnPromotion(chess_state, click, screen)
+                                    checkMate=rules.checkNoMove(chess_state,turn) 
                                     turn=rules.switchTurn(turn)
                                     # UI.animation(click, screen, chess_state, clock, turn)
                                     print(checkMate)
@@ -94,7 +94,7 @@ def main():
                 checkMate=rules.checkNoMove(chess_state,turn)             
                 turn = rules.switchTurn(turn)
             
-            # UI.draws(screen,chess_state,click,turn)
+            UI.draws(screen,chess_state,click,turn)
         clock.tick(15)    
         pygame.display.flip()
         
