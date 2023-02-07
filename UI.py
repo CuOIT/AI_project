@@ -88,7 +88,10 @@ def displayTextAt(screen, text, x, y):
     font = pygame.font.SysFont('Time new roman', 30) 
     text = font.render(f"Time:\n {text}", True, (255,255,255))
     screen.blit(text,(x,y)) 
-
+def displayDepth(screen, text, x, y):
+    font = pygame.font.SysFont('Time new roman', 30) 
+    text = font.render(f"Depth: {text}", True, (255,255,255))
+    screen.blit(text,(x,y)) 
     
     
 
