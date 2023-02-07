@@ -265,14 +265,18 @@ def moveListKing(x, y, turn, chess_state, realState):
     if realState == True:
         if (turn == 'w'):
             if main.castle["wKR"] == True and currentCastleRightKing(chess_state, turn, 5) == True:
-                moveList.append((7,6))
+                if checkAcceptMove(chess_state, turn,x, y, 7, 6):
+                    moveList.append((7,6))
             if main.castle["wQR"] == True and currentCastleRightKing(chess_state, turn, 1) == True:
-                moveList.append((7,2))
+                if checkAcceptMove(chess_state, turn,x, y, 7, 2):
+                    moveList.append((7,2))
         else:
             if main.castle["bKR"] == True and currentCastleRightKing(chess_state, turn, 5) == True:
-                moveList.append((0,6))
+                if checkAcceptMove(chess_state, turn,x, y, 0, 6):
+                    moveList.append((0,6))
             if main.castle["bQR"] == True and currentCastleRightKing(chess_state, turn, 1) == True:
-                moveList.append((0,2))
+                if checkAcceptMove(chess_state, turn,x, y, 0, 2):    
+                    moveList.append((0,2))
     for i in range(8):
         newX = x + direction[i][0]
         newY = y + direction[i][1]
@@ -384,7 +388,7 @@ def currentCastleRightKing(chess_state, turn, c):
             and chess_state[r][c+2] == "xx"\
             and "Rook" in chess_state[r][c-1] :
                 for i in range(c,c+3):
-                    if squareInAttack(r,c,turn,chess_state) == True:
+                    if squareInAttack(r,i,turn,chess_state) == True:
                         return False
                 return True
     # check square from right Rook to King 
@@ -392,7 +396,7 @@ def currentCastleRightKing(chess_state, turn, c):
         and chess_state[r][c+1] == "xx"\
             and "Rook" in chess_state[r][c+2]:
         for i in range(c,c+2):
-            if squareInAttack(r,c, turn, chess_state) == True:
+            if squareInAttack(r,i, turn, chess_state) == True:
                 return False
         return True
     return False

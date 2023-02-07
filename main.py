@@ -45,6 +45,9 @@ def main():
             list_chess_state.clear()
         else:
             if turn =='w' and True:
+                checkMate = rules.checkNoMove(chess_state,turn)   
+                if(checkMate):
+                    turn = 'b'
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         running = False
@@ -63,7 +66,6 @@ def main():
                                     #UI.animation(click, screen, chess_state, clock,turn)
                                     rules.update(chess_state,list_chess_state, click)
                                     rules.checkPawnPromotion(chess_state, click, screen)
-                                    checkMate=rules.checkNoMove(chess_state,turn) 
                                     turn=rules.switchTurn(turn)
                                     # UI.animation(click, screen, chess_state, clock, turn)
                                     print(checkMate)
