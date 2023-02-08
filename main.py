@@ -86,7 +86,7 @@ def main():
                         global castle
                         if event.key == pygame.K_LCTRL and len(list_chess_state) != 0:
                             print("stack co: ", len(list_chess_state))
-                            print(list_chess_state[-1])
+    
                             chess_state = list_chess_state.pop()
                             turn = 'w'
                             castle = rules.check_castle(chess_state)

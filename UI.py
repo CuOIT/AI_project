@@ -126,13 +126,13 @@ def animation(click, screen, chess_state, clock,turn):
         clock.tick(60)    
     chess_state[click[0][1]][click[0][0]] = temp # trả piece về lại start_node để chạy tiếp update bàn cờ
 
-def promoteChoice(screen, sideColor):
+def promoteChoice(screen, turn):
     x=40
     y=300
-    queen_btn=Button(x, y, pygame.image.load("res/"+sideColor+"Queen.png"))
-    rook_btn=Button(x+200, y, pygame.image.load("res/"+sideColor+"Rook.png"))
-    knight_btn=Button(x+400,y, pygame.image.load("res/"+sideColor+"Knight.png"))
-    bishop_btn=Button(x+600, y, pygame.image.load("res/"+sideColor+"Bishop.png"))
+    queen_btn=Button(x, y, pygame.image.load("res/"+turn+"Queen.png"))
+    rook_btn=Button(x+200, y, pygame.image.load("res/"+turn+"Rook.png"))
+    knight_btn=Button(x+400,y, pygame.image.load("res/"+turn+"Knight.png"))
+    bishop_btn=Button(x+600, y, pygame.image.load("res/"+turn+"Bishop.png"))
     pause= True
     piece =''
     while pause:
@@ -143,19 +143,19 @@ def promoteChoice(screen, sideColor):
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if queen_btn.draw(screen):
-                    piece= sideColor+ "Queen"
+                    piece= turn+ "Queen"
                     pause = False
                     return piece
                 elif rook_btn.draw(screen):
-                    piece =sideColor+"Rook"
+                    piece =turn+"Rook"
                     pause = False
                     return piece
                 elif knight_btn.draw(screen):
-                    piece =sideColor+"Knight"
+                    piece =turn+"Knight"
                     pause = False
                     return piece
                 elif bishop_btn.draw(screen):
-                    piece =sideColor+"Bishop"
+                    piece =turn+"Bishop"
                     pause = False
                     return piece
         pygame.display.update()
